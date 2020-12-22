@@ -165,21 +165,47 @@ def profile(username):
     #throw 404 if the user doesnt exist
     abort(404)
     
-@app.route("/game/<game_id>")
+@app.route("/game/<game_id>", methods=["GET", "POST"])
 @login_required
 def game(game_id):
+    #check if the game exists in the API db
     game = api_game_id_lookup([game_id])
     if not game:
         abort(404)
-
     game = game[0]
-    return render_template("game.html", game=game)
+    info = check_game_in_user(db, session["user_id"], game_id)
+
+    #handle post requests
+    if request.method == "POST":
+        action = request.form.get("action")
+        if action != "1" and action != "2" and action != "0":
+            flash("Invalid action: please don't modify HTML values, smartass")
+        elif action == "0":
+            if info:
+                flash("Invalid action: game already added")
+            else:
+                edit_user_game(db, session["user_id"], game_id, request.form.get("score"), request.form.get("status"), action)
+        elif action == "1":
+            if not info:
+                flash("Invalid action: can't update game not added yet")
+            else:
+                edit_user_game(db, session["user_id"], game_id, request.form.get("score"), request.form.get("status"), action)
+        else:
+            if not info:
+                flash("Invalid action: can't remove game not added yet")
+            else:
+                remove_user_game(db, session["user_id"], game_id)
+        
+        info = check_game_in_user(db, session["user_id"], game_id)
+    
+
+    return render_template("game.html", game=game, info=info)
 
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 
-def check_user_in_db(db, username): #if exists, returns user id. else, returns False
+def check_user_in_db(db, username): #returns user id or False
     db_cursor = db.cursor()
     db_cursor.execute("SELECT id FROM users WHERE username=?", (username,))
     rows = db_cursor.fetchone()
@@ -192,9 +218,45 @@ def check_user_in_db(db, username): #if exists, returns user id. else, returns F
     db_cursor.close()
     return False
 
-def get_user_games(db, user_id):
+def get_user_games(db, user_id):#returns a list of games or None
     db_cursor = db.cursor()
+    db_cursor.row_factory = lambda cursor, row: row[0]#stop using tuples for results -> its probably a good idea to do this to all cursors, but that would be super boring
     db_cursor.execute("SELECT game_id FROM userGames WHERE user_id=?", (user_id,))
     rows = db_cursor.fetchall()
     db_cursor.close()
     return rows
+
+def check_game_in_user(db, user_id, game_id):#returns a list with status and score or False
+    db_cursor = db.cursor()
+    db_cursor.execute("SELECT status, score FROM userGames WHERE game_id=? AND user_id=?", (game_id, user_id,))
+    rows = db_cursor.fetchone()
+    if rows:
+        info = rows
+        db_cursor.close()
+        return info
+    
+    db_cursor.close()
+    return False
+
+def edit_user_game(db, user_id, game_id, score, status, action):#adds to or updates userGames
+    if action == "0":
+        db_cursor = db.cursor()
+        db_cursor.execute("INSERT INTO userGames (user_id, game_id, score, status) VALUES(?, ?, ?, ?)", (user_id, game_id, score, status,))
+        db.commit()
+        db_cursor.close()
+    elif action == "1":
+        print("i started the editing")
+        print(score)
+        print(status)
+        db_cursor = db.cursor()
+        db_cursor.execute("UPDATE userGames SET score=?, status=? WHERE user_id=? AND game_id=?", (score, status, user_id, game_id,))
+        db.commit()
+        print("i finished the editting")
+        db_cursor.close()
+
+def remove_user_game(db, user_id, game_id):
+    db_cursor = db.cursor()
+    db_cursor.execute("DELETE FROM userGames WHERE user_id=? AND game_id=?", (user_id, game_id,))
+    db.commit()
+    db_cursor.close()
+    

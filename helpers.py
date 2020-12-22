@@ -16,16 +16,16 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def api_game_id_lookup(game_ids):
+def api_game_id_lookup(game_ids):#returns json of game or None
     if not game_ids:
         return
     byte_array = wrapper.api_request(
             'games',
-            f'fields id, name; where id = ({",".join(map(str, game_ids))});'
+            f'fields id, name, summary; where id = ({",".join(map(str, game_ids))});'
             )
     return json.loads(byte_array)
 
-def api_game_name_lookup(game_name):
+def api_game_name_lookup(game_name):#returns json of games or None
     if not game_name:
         return
     byte_array = wrapper.api_request(

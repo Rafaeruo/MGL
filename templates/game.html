@@ -14,4 +14,38 @@
 
 {% block main %}
     <h1>{{ game["name"] }}</h1>
+    <form action="/game/{{ game['id'] }}" method="post">
+        {{ info["status"] }}
+        <select name="status">
+            <option value="0" {% if info[0] == 0 %} selected {% endif %}>Not played</option>
+            <option value="1" {% if info[0] == 1 %} selected {% endif %}>Plan to play</option>
+            <option value="2" {% if info[0] == 2 %} selected {% endif %}>Playing</option>
+            <option value="3" {% if info[0] == 3 %} selected {% endif %}>Played</option>
+            <option value="4" {% if info[0] == 4 %} selected {% endif %}>Completed</option>
+        </select>
+        {{ info["score"] }}
+        <select name="score">
+            <option value="" {% if info[1] == "" %} selected {% endif %}>Select</option>
+            <option value="0" {% if info[1] == 0 %} selected {% endif %}>0</option>
+            <option value="1" {% if info[1] == 1 %} selected {% endif %}>1</option>
+            <option value="2" {% if info[1] == 2 %} selected {% endif %}>2</option>
+            <option value="3" {% if info[1] == 3 %} selected {% endif %}>3</option>
+            <option value="4" {% if info[1] == 4 %} selected {% endif %}>4</option>
+            <option value="5" {% if info[1] == 5 %} selected {% endif %}>5</option>
+            <option value="6" {% if info[1] == 6 %} selected {% endif %}>6</option>
+            <option value="7" {% if info[1] == 7 %} selected {% endif %}>7</option>
+            <option value="8" {% if info[1] == 8 %} selected {% endif %}>8</option>
+            <option value="9" {% if info[1] == 9 %} selected {% endif %}>9</option>
+            <option value="10" {% if info[1] == 10 %} selected {% endif %}>10</option>
+        </select>
+        {% if info %}
+            <button type="submit" name="action" value="1">Update</button>
+            <button type="submit" name="action" value="2">Remove</button>
+        {% else %}
+            <button type="submit" name="action" value="0">Add</button>
+        {% endif %}
+    </form>
+    <p>{{ game["summary"] }}</p>
+    
+    
 {% endblock %}
