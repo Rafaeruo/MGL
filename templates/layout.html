@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/style.css">
+    {% block head %}{% endblock %}
+    <title>MGL - {% block title %} My Game List {% endblock %}</title>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a href="/" class="navbar-brand">MGL</a>
+            
+            {% block nav %}{% endblock %}
+            
+            {% if session["user_id"] %}
+            <div class="user_options">
+                <a href="/user/{{ session['username'] }}" class="nav-link">Profile</a>    
+                <a href="/logout" class="nav-link">Log Out</a>
+            </div>
+            {% else %}
+            <div class="user_options">
+                <a href="/register" class="nav-link">Register</a>
+                <a href="/login" class="nav-link">Log In</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="flash">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% endwith %}
+    </div>
+    <main>
+        {% block main %}
+        {% endblock %}
+    </main>
+</body>
+</html>

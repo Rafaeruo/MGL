@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ game["name"] }}
+{% endblock %}
+
+
+{% block nav %}
+<form action="/search" method="get">
+    <input type="text" name="q" id="game_search" placeholder="Search for a game" autocomplete="off">
+    <button type="submit" id="game_search_btn">Go</button>
+</form>
+{% endblock %}
+
+{% block main %}
+    <h1>{{ game["name"] }}</h1>
+{% endblock %}

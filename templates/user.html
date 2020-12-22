@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    {{ username }}'s profile 
+{% endblock %}
+
+
+{% block nav %}
+<form action="/search" method="get">
+    <input type="text" name="q" id="game_search" placeholder="Search for a game" autocomplete="off">
+    <button type="submit" id="game_search_btn">Go</button>
+</form>
+{% endblock %}
+
+{% block main %}
+    {% if iscurrent %}
+    this is your profile <br>
+    {% endif %}
+    {{username}} <br>
+
+    {% if games %}
+    <ul>
+    {% for game in games %}
+        <li>{{  game["name"] }}</li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    
+{% endblock %}
