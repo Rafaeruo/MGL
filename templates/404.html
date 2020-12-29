@@ -1,11 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    not found
-</body>
-</html>
+{% extends "layout.html" %}
+
+{% block title %}
+    404 Not Found
+{% endblock %}
+
+{% block nav %}
+<form action="/search" method="get">
+    <input type="text" name="q" placeholder="Search for a game" autocomplete="off">
+    <button type="submit">Go</button>
+</form>
+{% endblock %}
+
+{% block main %}
+    <div id="container-404">
+        <div id="message-404">
+            <h1>Are you lost?</h1>
+            <p>Page not found (404)</p>
+            <br>
+            <a href="/">Take me home</a>
+        </div>
+    </div>
+{% endblock %}

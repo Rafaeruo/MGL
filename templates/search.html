@@ -1,26 +1,34 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Search
+    Search: {{ request.args.get("q") }}
 {% endblock %}
 
 
 {% block nav %}
 <form action="/search" method="get">
-    <input type="text" name="q" id="game_search" placeholder="Search for a game" autocomplete="off">
-    <button type="submit" id="game_search_btn">Go</button>
+    <input type="text" name="q" placeholder="Search for a game" autocomplete="off" value="{{ request.args.get('q') }}">
+    <button type="submit">Go</button>
 </form>
 {% endblock %}
 
 {% block main %}
-    {% if games %}
-    {% for game in games %}
-        <a href="/game/{{ game['id'] }}">
-            {{ game["name"] }}
-        <a>
-        <br>
-    {% endfor %}
-    {% else %}
-    <p>No games were found</p>
-    {% endif %}
+    <h1>Search results: {{ request.args.get('q') }}</h1><br>
+    <div id="search-results">
+        {% if games %}
+        {% for game in games %}
+        <div id="result">
+        {% if "cover" in game.keys() %}
+            <a href="/game/{{ game['slug'] }}"><img loading="lazy" id="result-image" src="{{ game['cover']['url'].replace('thumb', 'logo_med') }}"></a>
+        {% endif %}
+            <a href="/game/{{ game['slug'] }}">
+                {{ game["name"] }}
+            </a>
+            <br>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>No games were found</p>
+        {% endif %}
+    </div>
 {% endblock %}

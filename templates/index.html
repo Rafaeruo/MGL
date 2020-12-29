@@ -7,11 +7,41 @@
 
 {% block nav %}
 <form action="/search" method="get">
-    <input type="text" name="q" id="game_search" placeholder="Search for a game" autocomplete="off">
-    <button type="submit" id="game_search_btn">Go</button>
+    <input type="text" name="q" placeholder="Search for a game" autocomplete="off">
+    <button type="submit">Go</button>
 </form>
 {% endblock %}
 
 {% block main %}
-    <h1>Hello, {{ username }}</h1>
+    <div id="index-container">
+        <div id="index-title-div"><h1 id="index-title">Keep track of your games with MGL!</h1></div>
+
+        <div id="index-search-div">
+            <form action="/search" method="get">
+                <input type="text" name="q" placeholder="Search for a game and add it to your list!" autocomplete="off">
+                <button type="submit">Go</button>
+            </form>
+        </div>
+
+        <div class="index-group-div" id="index-group-popular">
+            <h2>Popular:</h2>
+            <div class="index-group-list">
+                <div class="index-group-game">
+                    <a href="#"><img src="#"></a>
+                    <a href="">example</a>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="index-group-div" id="index-group-upcoming">
+            <h2>Upcoming:</h2>
+            <div class="index-group-list">
+                <div class="index-group-game">
+                    <a href="#"><img src="#"></a>
+                    <a href="">example</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
 {% endblock %}

@@ -5,13 +5,16 @@
 {% endblock %}
 
 {% block main %}
-    <form action="/register" method="post" class="user_form">
-        <h1>Register</h1>
-        <input name="username" type="text" placeholder="Username" autocomplete="off">
-        <input name="name" type="text" placeholder="Name" autocomplete="off">
-        <input name="email" type="text" placeholder="E-mail" autocomplete="off">
-        <input name="password" type="password" placeholder="Password" autocomplete="off">
-        <input name="confirmation" type="password" placeholder="Password confirmation" autocomplete="off">
-        <button type="submit">Register</button>
-    </form>
+    <div id="login-container">
+        <form action="/register" method="post" class="user_form">
+            <h1>Register</h1>
+            <input name="username" type="text" placeholder="Username" autocomplete="off">
+            <input name="name" type="text" placeholder="Name" autocomplete="off">
+            <input name="email" type="email" placeholder="E-mail" autocomplete="off">
+            <input name="password" type="password" placeholder="Password" autocomplete="off">
+            <input name="confirmation" type="password" placeholder="Password confirmation" autocomplete="off">
+            <button type="submit">Register</button>
+            <p>Already got an account? </p><a href="/login">Log in</a>
+        </form>
+    </div>
 {% endblock %}

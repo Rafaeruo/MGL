@@ -7,23 +7,166 @@
 
 {% block nav %}
 <form action="/search" method="get">
-    <input type="text" name="q" id="game_search" placeholder="Search for a game" autocomplete="off">
-    <button type="submit" id="game_search_btn">Go</button>
+    <input type="text" name="q" placeholder="Search for a game" autocomplete="off">
+    <button type="submit">Go</button>
 </form>
 {% endblock %}
 
 {% block main %}
-    {% if iscurrent %}
-    this is your profile <br>
-    {% endif %}
-    {{username}} <br>
+    <div id="user-page-container">
+        <h1 id="user-page-username">{{ username }}'s profile {% if iscurrent %}(you)
+            {% endif %}</h1>
+        
+        <div id="user-page-info">
+            <div id="user-page-list-div">
+            <h2>Game list:</h2>
+            {% if games %}
 
-    {% if games %}
-    <ul>
-    {% for game in games %}
-        <li>{{  game["name"] }}</li>
-    {% endfor %}
-    </ul>
-    {% endif %}
+            
+            <details open>
+                <summary>All:</summary>
+                <div id="user-page-list-4">
+                {% for i in range(games|length) %}
+                <div class="user-page-list-game">
+                {% if "cover" in games[i].keys() %}
+                <a href="/game/{{ games[i]['slug'] }}"><img src="{{ games[i]['cover']['url'].replace('thumb', 'logo_med') }}" id="user-page-list-game-image"></a>
+                {% endif %}
+                <a href="/game/{{ games[i]['slug'] }}">{{  games[i]["name"] }}</a>
+                </div>
+                {% endfor %}
+                </div>
+            </details>
+            <br>
+
+
+            
+            <details>
+                <summary>Not played:</summary>
+                <div id="user-page-list-0">
+                    {% for i in range(games|length) %}
+                    {% if info[i][2] == 0 %}
+                    <div class="user-page-list-game">
+                    {% if "cover" in games[i].keys() %}
+                    <a href="/game/{{ games[i]['slug'] }}"><img src="{{ games[i]['cover']['url'].replace('thumb', 'logo_med') }}" id="user-page-list-game-image"></a>
+                    {% endif %}
+                    <a href="/game/{{ games[i]['slug'] }}">{{  games[i]["name"] }}</a>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    </div>
+            </details>
+            
+            
+
+            <details>
+                <summary>Plan to play:</summary>
+                <div id="user-page-list-1">
+                    {% for i in range(games|length) %}
+                    {% if info[i][2] == 1 %}
+                    <div class="user-page-list-game">
+                    {% if "cover" in games[i].keys() %}
+                    <a href="/game/{{ games[i]['slug'] }}"><img src="{{ games[i]['cover']['url'].replace('thumb', 'logo_med') }}" id="user-page-list-game-image"></a>
+                    {% endif %}
+                    <a href="/game/{{ games[i]['slug'] }}">{{  games[i]["name"] }}</a>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    </div>
+            </details>
+            
+            <details>
+                <summary>Playing:</summary>
+                <div id="user-page-list-2">
+                {% for i in range(games|length) %}
+                {% if info[i][2] == 2 %}
+                <div class="user-page-list-game">
+                {% if "cover" in games[i].keys() %}
+                <a href="/game/{{ games[i]['slug'] }}"><img src="{{ games[i]['cover']['url'].replace('thumb', 'logo_med') }}" id="user-page-list-game-image"></a>
+                {% endif %}
+                <a href="/game/{{ games[i]['slug'] }}">{{  games[i]["name"] }}</a>
+                </div>
+                {% endif %}
+                {% endfor %}
+                </div>
+            </details>
+            
+            <details>
+                <summary>Played:</summary>
+                <div id="user-page-list-3">
+                {% for i in range(games|length) %}
+                {% if info[i][2] == 3 %}
+                <div class="user-page-list-game">
+                {% if "cover" in games[i].keys() %}
+                <a href="/game/{{ games[i]['slug'] }}"><img src="{{ games[i]['cover']['url'].replace('thumb', 'logo_med') }}" id="user-page-list-game-image"></a>
+                {% endif %}
+                <a href="/game/{{ games[i]['slug'] }}">{{  games[i]["name"] }}</a>
+                </div>
+                {% endif %}
+                {% endfor %}
+                </div>
+            </details>
+            
+            <details>
+                <summary>Completed:</summary>
+                <div id="user-page-list-4">
+                {% for i in range(games|length) %}
+                {% if info[i][2] == 4 %}
+                <div class="user-page-list-game">
+                {% if "cover" in games[i].keys() %}
+                <a href="/game/{{ games[i]['slug'] }}"><img src="{{ games[i]['cover']['url'].replace('thumb', 'logo_med') }}" id="user-page-list-game-image"></a>
+                {% endif %}
+                <a href="/game/{{ games[i]['slug'] }}">{{  games[i]["name"] }}</a>
+                </div>
+                {% endif %}
+                {% endfor %}
+                </div>
+            </details>
+            
+
+
+
+            <!-- tests -->
+
+
+            <!-- <br>
+            <h3>all 2 (legacy):</h3>
+            <div id="user-page-list-4">
+            {% for game in games %}
+            <div class="user-page-list-game">
+            {% if "cover" in game.keys() %}
+            <img src="{{ game['cover']['url'].replace('thumb', 'logo_med') }}" id="user-page-list-game-image">
+            {% endif %}
+            <a href="/game/{{ game['slug'] }}">{{  game["name"] }}</a>
+            </div>
+            {% endfor %}
+            </div> -->
+
+            {% else %}
+            <p>This user's list is empty.</p>
+            {% endif %}
+        </div>
+    </div>  
+    <!-- <script>
+        url = window.location.href;
+        window.onload = ()=>{
+            let xmlhttp = new XMLHttpRequest();
+
+            xmlhttp.onreadystatechange = function() {
+                if (xmlhttp.readyState == XMLHttpRequest.DONE) {   // XMLHttpRequest.DONE == 4
+                    if (xmlhttp.status == 200) {
+                        console.log(this.response);
+                    }
+                    else if (xmlhttp.status == 400) {
+                        alert('There was an error 400');
+                    }
+                    else {
+                        alert('something else other than 200 was returned');
+                    }
+                }
+            };
+            xmlhttp.open("POST", url);
+            xmlhttp.send()
+        }
+    </script> -->
     
 {% endblock %}

@@ -5,9 +5,9 @@ from sqlite3 import Error
 
 from flask import Flask, render_template, request, session, redirect, flash, abort
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import timedelta
+from datetime import timedelta, datetime
 
-from helpers import login_required, api_game_id_lookup, api_game_name_lookup
+from helpers import login_required, api_game_id_lookup, api_game_name_lookup, api_game_slug_lookup, to_json, object_to_json
 
 
 #set up sqlite3 connction
@@ -22,7 +22,6 @@ app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.secret_key = "0j5sDEU96HdBN7GD"#secrect key for session encryption
 #app.permanent_session_lifetime = timedelta(days=7)#sets how long the session will last
-
 
 #main code
 @app.route("/")
@@ -73,6 +72,7 @@ def login():
 @app.route("/logout")
 def logout():
     session.clear()
+    flash("Logged out")
     return redirect("/login")
 
 @app.route("/register", methods=["GET", "POST"])
@@ -145,9 +145,19 @@ def search():
 
     return render_template("search.html", games=games)
     
-@app.route("/user/<username>")
+@app.route("/user/<username>", methods=["POST", "GET"])
 @login_required
 def profile(username):
+    # if request.method == "POST":#when the javascript ajax code requests the game list
+
+    #     user_games_api = get_user_games(db, session["user_id"])#get user game id list from sql database
+    #     user_games_api = api_game_id_lookup(user_games_api)#game user games info from api
+    #     user_games_info = get_user_games_info(db, session["user_id"])
+
+        
+    #     return object_to_json([user_games_api, user_games_info])
+    
+    
     #check if user exists in the database
     user_id = check_user_in_db(db, username)
     if user_id:
@@ -155,41 +165,51 @@ def profile(username):
         iscurrent = False
         if username == session["username"]:
             iscurrent = True
-        
+
         user_games = get_user_games(db, user_id)#get user game id list from sql database
         user_games = api_game_id_lookup(user_games)#game user games info from api
+        
+        info = get_user_games_info(db, user_id)
 
-        return render_template("user.html", username=username, iscurrent=iscurrent, games=user_games)
+        return render_template("user.html", username=username, iscurrent=iscurrent, games=user_games, info=info)
+
+    
 
 
     #throw 404 if the user doesnt exist
     abort(404)
     
-@app.route("/game/<game_id>", methods=["GET", "POST"])
+@app.route("/game/<game_slug>", methods=["GET", "POST"])
 @login_required
-def game(game_id):
+def game(game_slug):
     #check if the game exists in the API db
-    game = api_game_id_lookup([game_id])
+    game = api_game_slug_lookup(game_slug)
     if not game:
         abort(404)
     game = game[0]
+    game_id = game["id"]
     info = check_game_in_user(db, session["user_id"], game_id)
+
+    if "first_release_date" in game.keys():
+        game["first_release_date"] = datetime.fromtimestamp(game["first_release_date"]).strftime("%Y-%m-%d")
 
     #handle post requests
     if request.method == "POST":
-        action = request.form.get("action")
+        data = to_json(request.get_data())
+
+        action = data["action"]
         if action != "1" and action != "2" and action != "0":
             flash("Invalid action: please don't modify HTML values, smartass")
         elif action == "0":
             if info:
                 flash("Invalid action: game already added")
             else:
-                edit_user_game(db, session["user_id"], game_id, request.form.get("score"), request.form.get("status"), action)
+                edit_user_game(db, session["user_id"], game_id, data["score"], data["status"], action)
         elif action == "1":
             if not info:
                 flash("Invalid action: can't update game not added yet")
             else:
-                edit_user_game(db, session["user_id"], game_id, request.form.get("score"), request.form.get("status"), action)
+                edit_user_game(db, session["user_id"], game_id, data["score"], data["status"], action)
         else:
             if not info:
                 flash("Invalid action: can't remove game not added yet")
@@ -197,7 +217,8 @@ def game(game_id):
                 remove_user_game(db, session["user_id"], game_id)
         
         info = check_game_in_user(db, session["user_id"], game_id)
-    
+        
+        return render_template("game-options.html", info=info)#render the div via ajax so that the js can update the page without reloading
 
     return render_template("game.html", game=game, info=info)
 
@@ -218,10 +239,17 @@ def check_user_in_db(db, username): #returns user id or False
     db_cursor.close()
     return False
 
-def get_user_games(db, user_id):#returns a list of games or None
+def get_user_games(db, user_id):#returns a list of game ids or None
     db_cursor = db.cursor()
     db_cursor.row_factory = lambda cursor, row: row[0]#stop using tuples for results -> its probably a good idea to do this to all cursors, but that would be super boring
     db_cursor.execute("SELECT game_id FROM userGames WHERE user_id=?", (user_id,))
+    rows = db_cursor.fetchall()
+    db_cursor.close()
+    return rows
+
+def get_user_games_info(db, user_id):#returns list of tuples with the id, score and status
+    db_cursor = db.cursor()
+    db_cursor.execute("SELECT game_id, score, status FROM userGames WHERE user_id=?", (user_id,))
     rows = db_cursor.fetchall()
     db_cursor.close()
     return rows
@@ -254,7 +282,7 @@ def edit_user_game(db, user_id, game_id, score, status, action):#adds to or upda
         print("i finished the editting")
         db_cursor.close()
 
-def remove_user_game(db, user_id, game_id):
+def remove_user_game(db, user_id, game_id):#remove entry from userGames
     db_cursor = db.cursor()
     db_cursor.execute("DELETE FROM userGames WHERE user_id=? AND game_id=?", (user_id, game_id,))
     db.commit()
