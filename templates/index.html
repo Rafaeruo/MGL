@@ -7,41 +7,62 @@
 
 {% block nav %}
 <form action="/search" method="get">
-    <input type="text" name="q" placeholder="Search for a game" autocomplete="off">
+    <input type="search" name="q" placeholder="Search for a game" autocomplete="off">
     <button type="submit">Go</button>
 </form>
 {% endblock %}
 
 {% block main %}
     <div id="index-container">
-        <div id="index-title-div"><h1 id="index-title">Keep track of your games with MGL!</h1></div>
-
-        <div id="index-search-div">
-            <form action="/search" method="get">
-                <input type="text" name="q" placeholder="Search for a game and add it to your list!" autocomplete="off">
-                <button type="submit">Go</button>
-            </form>
-        </div>
-
-        <div class="index-group-div" id="index-group-popular">
-            <h2>Popular:</h2>
-            <div class="index-group-list">
-                <div class="index-group-game">
-                    <a href="#"><img src="#"></a>
-                    <a href="">example</a>
-                </div>
+        <div id="index-title-div">
+            <h1 id="index-title">Keep track of the games you play</h1>
+            <div id="index-search-div">
+                <form action="/search" method="get">
+                    <input type="search" name="q" placeholder="Search for a game and add it to your list!" autocomplete="off">
+                    <button type="submit">Go</button>
+                </form>
             </div>
         </div>
-        <br>
-        <div class="index-group-div" id="index-group-upcoming">
-            <h2>Upcoming:</h2>
+
+        
+        <div class="index-group-list-div" id="index-group-list-div-recent">
+            <h2>Games users recently interacted with:</h2>
             <div class="index-group-list">
+                {% for game in latest %}
+                {% if "cover" in game.keys() %}
                 <div class="index-group-game">
-                    <a href="#"><img src="#"></a>
-                    <a href="">example</a>
+                    <a href="/game/{{game['slug']}}"><img class="index-group-game-img" src="{{ game['cover']['url'].replace('thumb', '720p') }}"></a>
                 </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="index-group-list-div" id="index-group-list-div-random">
+            <h2>Random games to consider playing next:</h2>
+                
+            <div class="index-group-list">
+                {% for game in random %}
+                {% if "cover" in game.keys() %}
+                <div class="index-group-game">
+                    <a href="/game/{{game['slug']}}"><img class="index-group-game-img" src="{{ game['cover']['url'].replace('thumb', '720p') }}"></a>
+                </div>
+                {% endif %}
+                {% endfor %} 
             </div>
         </div>
 
     </div>
+
+    <script>
+        //center the horizontal scroll bars 
+        var scrolls = document.querySelectorAll(".index-group-list");
+        for (i = 0; i < scrolls.length; i++){
+            scrolls[i].scrollLeft = (scrolls[i].scrollWidth - scrolls[i].offsetWidth)/2;
+
+            
+        }
+
+
+    </script>
 {% endblock %}

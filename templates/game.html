@@ -6,7 +6,7 @@
 
 {% block nav %}
 <form action="/search" method="get">
-    <input type="text" name="q" placeholder="Search for a game" autocomplete="off">
+    <input type="search" name="q" placeholder="Search for a game" autocomplete="off">
     <button type="submit">Go</button>
 </form>
 {% endblock %}
@@ -84,6 +84,29 @@
             <label for="game-page-info-release">Release Date:</label>
             <p title="YYYY/MM/DD" id="game-page-info-release">{{ game["first_release_date"] }}</p>
             </span>
+
+            <span class="breakline">
+                <label for="game-page-info-release">Developers:</label>
+                <ul>
+                {% for i in range(game["involved_companies"]|length) %}
+                    {% if game["involved_companies"][i]["developer"] %}
+                        <li>{{ game["involved_companies"][i]["company"]["name"] }}</li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            </span>
+
+            <span class="breakline">
+                <label for="game-page-info-release">Publishers:</label>
+                <ul>
+                {% for i in range(game["involved_companies"]|length) %}
+                    {% if game["involved_companies"][i]["publisher"] %}
+                    <li>{{ game["involved_companies"][i]["company"]["name"] }}</li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            </span>
+
         </div>
     </div>
 
@@ -172,5 +195,31 @@
             xmlhttp.open("POST", url);
             xmlhttp.send(data);
         }
+
+        var summary = document.querySelector("#game-page-info-summary");
+
+        if (summary.innerHTML.length > 300){
+            summary.innerHTML = summary.innerHTML.substr(0, 300)+"<span id='dododot'>...</span><span id='more' hidden>"+summary.innerHTML.substr(301, summary.innerHTML.length-1)+"</span>&nbsp&nbsp<a id='more-btn'>View more</a>"
+        }
+
+        var dododot = document.querySelector("#dododot");
+        var more = document.querySelector("#more");
+        var more_btn = document.querySelector("#more-btn")
+
+
+        more_btn.addEventListener("click", ()=>{
+            if (more.hidden){
+                more.hidden = false;
+                dododot.hidden = true;
+                more_btn.innerHTML = "View less";
+            }
+            else{
+                more.hidden = true;
+                dododot.hidden = false;
+                more_btn.innerHTML = "View more";
+            }
+        })
+
+
     </script>
 {% endblock %}

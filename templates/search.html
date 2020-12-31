@@ -7,7 +7,7 @@
 
 {% block nav %}
 <form action="/search" method="get">
-    <input type="text" name="q" placeholder="Search for a game" autocomplete="off" value="{{ request.args.get('q') }}">
+    <input type="search" name="q" placeholder="Search for a game" autocomplete="off" value="{{ request.args.get('q') }}">
     <button type="submit">Go</button>
 </form>
 {% endblock %}
@@ -16,17 +16,29 @@
     <h1>Search results: {{ request.args.get('q') }}</h1><br>
     <div id="search-results">
         {% if games %}
-        {% for game in games %}
+        {% for i in range(limit) %}
         <div id="result">
-        {% if "cover" in game.keys() %}
-            <a href="/game/{{ game['slug'] }}"><img loading="lazy" id="result-image" src="{{ game['cover']['url'].replace('thumb', 'logo_med') }}"></a>
+        {% if "cover" in games[i].keys() %}
+            <a href="/game/{{ games[i]['slug'] }}"><img loading="lazy" id="result-image" src="{{ games[i]['cover']['url'].replace('thumb', 'logo_med') }}"></a>
         {% endif %}
-            <a href="/game/{{ game['slug'] }}">
-                {{ game["name"] }}
+            <a href="/game/{{ games[i]['slug'] }}">
+                {{ games[i]["name"] }}
             </a>
             <br>
         </div>
         {% endfor %}
+        <div id="page-options-container">
+            {% if page > 1 %}
+            <div class="page-options">
+                <a href="/search?q={{request.args.get('q')}}&p={{page-1}}">Previous</a>
+            </div>
+            {% endif %}
+            {% if games|length > limit %}
+            <div class="page-options">
+                <a href="/search?q={{request.args.get('q')}}&p={{page+1}}">Next</a>
+            </div>
+            {% endif %}
+        </div>
         {% else %}
         <p>No games were found</p>
         {% endif %}

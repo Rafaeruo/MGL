@@ -2,6 +2,7 @@ from flask import session, redirect
 from functools import wraps
 import requests
 import os
+from random import randint
 
 import json
 from igdb.wrapper import IGDBWrapper
@@ -21,7 +22,7 @@ def api_game_id_lookup(game_ids):#returns json of game or None
         return
     byte_array = wrapper.api_request(
             'games',
-            f'fields id, name, slug, cover.url; where id = ({",".join(map(str, game_ids))}); limit 100;'
+            f'fields id, name, slug, cover.url; where id = ({",".join(map(str, game_ids))}); limit 500;'
             )
     return json.loads(byte_array)
 
@@ -30,22 +31,26 @@ def api_game_slug_lookup(game_slug):#returns json of game or None
         return
     byte_array = wrapper.api_request(
             'games',
-            f'fields id, name, summary, slug, cover.url, platforms.name, genres.name, first_release_date; where slug = "{game_slug}";'
+            f'fields id, name, summary, slug, cover.url, platforms.name, genres.name, first_release_date, involved_companies.company.name, involved_companies.developer, involved_companies.publisher; where slug = "{game_slug}";'
             )
     return json.loads(byte_array)
 
-def api_game_name_lookup(game_name):#returns json of games or None
+def api_game_name_lookup(game_name, page, limit, limit_display):#returns json of games or None
     if not game_name:
         return
+    page = (int(page)-1)*limit_display
     byte_array = wrapper.api_request(
             'games',
-            f'fields name, slug, cover.url; search "{game_name}"; limit 15; offset 0;'
+            f'fields name, slug, cover.url; search "{game_name}"; limit ${limit}; offset ${page};'
             )
     return json.loads(byte_array)
 
-def to_json(string):
-    string = string.decode("utf-8")
-    return json.loads(string)
-
-def object_to_json(obj):
-    return json.dumps(obj)
+def api_get_random(n):
+    ids = []
+    for i in range(n):
+        ids.append(randint(0, 142043))#some ids don't actually exist but it doesn't matter
+    byte_array = wrapper.api_request(
+            'games',
+            f'fields id, name, cover.url, slug; where id = ({",".join(map(str, ids))}); limit {n};' 
+            )
+    return json.loads(byte_array)
