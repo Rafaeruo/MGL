@@ -45,10 +45,10 @@
                     <option value="10" {% if info[1] == 10 %} selected {% endif %}>10</option>
                 </select>
                 {% if info %}
-                    <button type="submit" name="action" value="1" id="update">Update</button>
-                    <button type="submit" name="action" value="2" id="delete">Remove</button>
+                    <button type="submit" name="action" value="1" id="update" class="AUD-button">Update</button>
+                    <button type="submit" name="action" value="2" id="delete" class="AUD-button">Remove</button>
                 {% else %}
-                    <button type="submit" name="action" value="0" id="add">Add</button>
+                    <button type="submit" name="action" value="0" id="add" class="AUD-button">Add</button>
                 {% endif %}
             </div>
             
@@ -109,117 +109,5 @@
 
         </div>
     </div>
-
-    <script>
-        // ajax for updating the score and status on user input
-        var url = window.location.href;
-
-        "{% if not info %}"
-        document.querySelector("#add").addEventListener("click", addF);
-        "{% else %}"
-        document.querySelector("#update").addEventListener("click", updateF);
-        document.querySelector("#delete").addEventListener("click", removeF);
-        "{% endif %}"
-
-        
-        function addF(){
-            let xmlhttp = new XMLHttpRequest();
-
-            xmlhttp.onreadystatechange = function() {
-                if (xmlhttp.readyState == XMLHttpRequest.DONE) {   // XMLHttpRequest.DONE == 4
-                    if (xmlhttp.status == 200) {
-                        document.querySelector("#game-page-info-options").innerHTML = this.response;
-                        document.querySelector("#update").addEventListener("click", updateF);
-                        document.querySelector("#delete").addEventListener("click", removeF);
-                    }
-                    else if (xmlhttp.status == 400) {
-                        alert('There was an error 400');
-                    }
-                    else {
-                        alert('something else other than 200 was returned');
-                    }
-                }
-            };
-            let status = document.querySelector("#game-page-info-status").value;
-            let score = document.querySelector("#game-page-info-score").value;
-            let data = JSON.stringify({"action": "0", "status": status, "score": score});
-            xmlhttp.open("POST", url);
-            xmlhttp.send(data);
-        }
-
-        function updateF(){
-            let xmlhttp = new XMLHttpRequest();
-
-            xmlhttp.onreadystatechange = function() {
-                if (xmlhttp.readyState == XMLHttpRequest.DONE) {   // XMLHttpRequest.DONE == 4
-                    if (xmlhttp.status == 200) {
-                        document.querySelector("#game-page-info-options").innerHTML = this.response;
-                        document.querySelector("#update").addEventListener("click", updateF);
-                        document.querySelector("#delete").addEventListener("click", removeF);
-                    }
-                    else if (xmlhttp.status == 400) {
-                        alert('There was an error 400');
-                    }
-                    else {
-                        alert('something else other than 200 was returned');
-                    }
-                }
-            };
-            let status = document.querySelector("#game-page-info-status").value;
-            let score = document.querySelector("#game-page-info-score").value;
-            let data = JSON.stringify({"action": "1", "status": status, "score": score});
-            xmlhttp.open("POST", url);
-            xmlhttp.send(data);
-        }
-
-        function removeF(){
-            let xmlhttp = new XMLHttpRequest();
-
-            xmlhttp.onreadystatechange = function() {
-                if (xmlhttp.readyState == XMLHttpRequest.DONE) {   // XMLHttpRequest.DONE == 4
-                    if (xmlhttp.status == 200) {
-                        document.querySelector("#game-page-info-options").innerHTML = this.response;
-                        document.querySelector("#add").addEventListener("click", addF);
-                    }
-                    else if (xmlhttp.status == 400) {
-                        alert('There was an error 400');
-                    }
-                    else {
-                        alert('something else other than 200 was returned');
-                    }
-                }
-            };
-            let status = document.querySelector("#game-page-info-status");
-            let score = document.querySelector("#game-page-info-score");
-            let data = JSON.stringify({"action": "2"});
-            xmlhttp.open("POST", url);
-            xmlhttp.send(data);
-        }
-
-        var summary = document.querySelector("#game-page-info-summary");
-
-        if (summary.innerHTML.length > 300){
-            summary.innerHTML = summary.innerHTML.substr(0, 300)+"<span id='dododot'>...</span><span id='more' hidden>"+summary.innerHTML.substr(301, summary.innerHTML.length-1)+"</span>&nbsp&nbsp<a id='more-btn'>View more</a>"
-        }
-
-        var dododot = document.querySelector("#dododot");
-        var more = document.querySelector("#more");
-        var more_btn = document.querySelector("#more-btn")
-
-
-        more_btn.addEventListener("click", ()=>{
-            if (more.hidden){
-                more.hidden = false;
-                dododot.hidden = true;
-                more_btn.innerHTML = "View less";
-            }
-            else{
-                more.hidden = true;
-                dododot.hidden = false;
-                more_btn.innerHTML = "View more";
-            }
-        })
-
-
-    </script>
+    <script src="../static/js/game.js"></script>
 {% endblock %}
