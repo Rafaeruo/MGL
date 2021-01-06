@@ -34,6 +34,8 @@ def index():
 
     random = api_get_random(30)
     
+    if not latest:
+        latest = []
 
     return render_template("index.html", latest=latest, random=random)
 
