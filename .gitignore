@@ -3,3 +3,4 @@
 .env
 procfile
 wsgi.py
+.prettierignore
