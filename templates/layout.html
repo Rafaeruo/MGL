@@ -13,7 +13,12 @@
         <nav id="nav">
             <a href="/" id="header-logo">MyGameList</a>
             <div class="nav-extra">
-            {% block nav %}{% endblock %}
+            {% block nav %}
+            <form action="/search" method="get">
+                <input type="text" name="q" placeholder="Search for a game" autocomplete="off" value="{% if request.args.get('q') %}{{ request.args.get('q') }}{% endif %}">
+                <button type="submit">Go</button>
+            </form>
+            {% endblock %}
             </div>
             {% if session["user_id"] %}
             <div class="options">

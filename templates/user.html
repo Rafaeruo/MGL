@@ -4,14 +4,6 @@
     {{ username }}'s profile 
 {% endblock %}
 
-
-{% block nav %}
-<form action="/search" method="get">
-    <input type="search" name="q" placeholder="Search for a game" autocomplete="off">
-    <button type="submit">Go</button>
-</form>
-{% endblock %}
-
 {% block main %}
     <div id="user-page-container">
         <h1 id="user-page-username">{{ username }}'s profile {% if iscurrent %}(you)

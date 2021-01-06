@@ -4,14 +4,6 @@
     Search: {{ request.args.get("q") }}
 {% endblock %}
 
-
-{% block nav %}
-<form action="/search" method="get">
-    <input type="search" name="q" placeholder="Search for a game" autocomplete="off" value="{{ request.args.get('q') }}">
-    <button type="submit">Go</button>
-</form>
-{% endblock %}
-
 {% block main %}
     <h1>Search results: {{ request.args.get('q') }}</h1><br>
     <div id="search-results">
